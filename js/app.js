@@ -1,5 +1,5 @@
-// ITCS333 A3 — vanilla-JS to-do app.
-// Everything lives inside one IIFE so nothing leaks into the global scope.
+// ITCS333 A3: to-do list app
+// all the code is inside this IIFE so nothing ends up on window
 (function () {
   'use strict';
 
@@ -10,15 +10,15 @@
   var counter = document.getElementById('counter');
   var filters = document.querySelector('.filters');
 
-  // 'all' | 'active' | 'done'
+  // which filter is active: 'all', 'active' or 'done'
   var currentFilter = 'all';
 
   function showError(show) {
     errorMsg.classList.toggle('hidden', !show);
   }
 
-  // Build one <li> with a text span and a delete button.
-  // textContent (not innerHTML) so typed text is never parsed as HTML.
+  // makes the <li> with the text and a delete button.
+  // textContent so whatever is typed can't turn into real html
   function createItem(text) {
     var li = document.createElement('li');
 
@@ -36,9 +36,10 @@
     return li;
   }
 
-  // Show or hide each item for the current filter, then refresh the counter.
-  // Inline style.display is used because "#todo-list li" in the CSS sets
-  // display:flex and would beat the .hidden class.
+  // goes through the list once: hides what the current filter doesn't
+  // want and counts the items that aren't completed.
+  // I use style.display because the css has "#todo-list li { display: flex }"
+  // and that beats the .hidden class
   function render() {
     var left = 0;
     for (var i = 0; i < list.children.length; i++) {
@@ -61,7 +62,7 @@
     render();
   }
 
-  // 1 + 2: add an item, or show the error for an empty submission.
+  // add button and Enter both end up here
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     var text = input.value.trim();
@@ -76,13 +77,14 @@
     render();
   });
 
-  // Clear the error as soon as the user starts typing again.
+  // hide the error again once they start typing
   input.addEventListener('input', function () {
     showError(false);
   });
 
-  // 3 + 4: event delegation — ONE click listener on the list handles every
-  // item, including items added later. closest() finds which part was clicked.
+  // only one click listener, on the ul. clicks on the items bubble up to it
+  // and closest() tells me if it was the delete button or the text.
+  // this way items added later work without any extra code
   list.addEventListener('click', function (event) {
     var target = event.target;
 
@@ -100,7 +102,7 @@
     }
   });
 
-  // 5: filter buttons, also delegated through their container.
+  // same idea for the three filter buttons, one listener on their container
   filters.addEventListener('click', function (event) {
     var btn = event.target.closest('button');
     if (!btn) {
@@ -115,6 +117,5 @@
     }
   });
 
-  // 6: initial counter.
   render();
 })();
